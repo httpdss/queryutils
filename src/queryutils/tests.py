@@ -5,7 +5,7 @@ import unittest
 import queryutils
 
 class ParseSearchQueryTestCase(unittest.TestCase):
-    
+
     def setUp (self):
         ## stub
         keys = { 'company' : None,
@@ -60,14 +60,14 @@ class ParseSearchQueryTestCase(unittest.TestCase):
 
     def testparse_search_query_4(self):
         query = " company:GM  industry:\"341 more garbage"
-        result = [(operator.and_, 'company','GM'),
+        result = [(operator.and_, 'company', 'GM'),
                   (operator.and_, 'industry', '341 more garbage')]
         self.assertEqual(self.search_obj.parse_search_query(query), result)
 
     def testparse_search_query_5(self):
-       query = "industry:\"341 more garbage company:GM"
-       result = [(operator.and_, 'industry', '341 more garbage company:GM')]
-       self.assertEqual(self.search_obj.parse_search_query(query), result)
+        query = "industry:\"341 more garbage company:GM"
+        result = [(operator.and_, 'industry', '341 more garbage company:GM')]
+        self.assertEqual(self.search_obj.parse_search_query(query), result)
 
     def testparse_search_query_6(self):
         query = " montoto:\"poroto\" industry:341"

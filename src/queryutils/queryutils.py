@@ -131,7 +131,7 @@ class SearchOp (object):
         return (hasattr(self, 'generate_sql'))
 
 class SearchGlobOp(SearchOp):
-    
+
     def __init__ (self, *fields):
         self.fields = fields
         self._op_suffix = '__iregex'
@@ -141,11 +141,11 @@ class SearchGlobOp(SearchOp):
         qset = Q()
         for field in self.fields:
             if field.startswith("^"):
-                k = field.lstrip("^")+self._op_suffix
+                k = field.lstrip("^") + self._op_suffix
                 qset = qset | ~Q(**{k:v})
 
-            else: 
-                k = field+self._op_suffix
+            else:
+                k = field + self._op_suffix
                 qset = qset | Q(**{k:v})
         return qset
 
@@ -163,7 +163,7 @@ class SearchGlobOp(SearchOp):
         return ''.join(regexp)
 
 class SearchEqualOp(SearchOp):
-    
+
     def __init__ (self, *fields):
         self.fields = fields
 
@@ -185,18 +185,18 @@ class SearchEqualOp(SearchOp):
                 k = field.lstrip("^")
                 qset = qset | ~Q(**{k:value})
 
-            else: 
+            else:
                 qset = qset | Q(**{k:value})
         return qset
 
 class SearchExtraSQL(SearchOp):
-    
+
     def __init__ (self, sql_string, *values):
         self.sql_string = sql_string
         self.args = values
-    
+
     def generate_sql (self, value):
-        return (self.sql_string %(self.args)) %(value)
+        return (self.sql_string % (self.args)) % (value)
 
 class SearchQueryGenerator:
 
@@ -227,7 +227,7 @@ class SearchQueryGenerator:
                 #Convert string to a two digit float truncating at the second digit.
                 if key in self.num_key_list:
                     try:
-                        value = math.floor(float(value)*100)/100
+                        value = math.floor(float(value) * 100) / 100
                     except ValueError:
                         value = 0
                 search_env.append((next_op, key, value))
@@ -241,27 +241,27 @@ class SearchQueryGenerator:
         return search_env
 
 
-    def make_query(self, search_query, wheres=[],
-                   ordering=tuple(), init_q_set=None):
+    def make_query(self, search_query, wheres = [],
+                   ordering = tuple(), init_q_set = None):
         qset = Q()
         for op, k, v in self.parse_search_query(search_query):
-         
+
             q_object = None
-            search_op =  self.search_keywords.get(k)
-         
+            search_op = self.search_keywords.get(k)
+
             if search_op != None:
                 if search_op.is_query_generator():
-                    q_object = search_op.generate_query(v) 
+                    q_object = search_op.generate_query(v)
                 elif search_op.is_sql_generator():
                     wheres.append(search_op.generate_sql(v))
-         
+
             if q_object is not None:
                 qset = op(qset, q_object)
-        
+
         if init_q_set != None:
             q = init_q_set
         else:
             q = self.klass.objects.all()
-            
-        q = q.filter(qset).extra(where=wheres)
-        return q.distinct()   
+
+        q = q.filter(qset).extra(where = wheres)
+        return q.distinct()
